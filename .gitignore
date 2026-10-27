@@ -1,0 +1,24 @@
+# ---- 大体积工具与中间产物（不随仓库发布，可由脚本重新生成） ----
+tools/
+video/frames/
+video/post/
+
+# ---- Blender 备份文件 ----
+scenes/*.blend1
+scenes/*.blend2
+scenes/*.blend@
+
+# ---- 用户提供的原始产品照片（版权原因不入库） ----
+design/product_original.png
+
+# ---- Python / 系统 ----
+__pycache__/
+*.py[cod]
+.venv/
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ---- 编辑器 ----
+.vscode/
+.idea/
