@@ -8,7 +8,9 @@
 
 ![设计说明图（结构、关节、自锁原理）](design/design_sheet.png)
 
-🎬 仿真视频：[`video/two_clip_bowl_lifter_demo.mp4`](video/two_clip_bowl_lifter_demo.mp4)（21.5 s / 1280×720 / 24 fps，GitHub 页面点击即可播放）
+🎬 仿真视频：
+- V1（台面取碗、孔钩互锁）: [`video/two_clip_bowl_lifter_demo.mp4`](video/two_clip_bowl_lifter_demo.mp4)（21.5 s）
+- **V2（锅中取碗、加高把手）**: [`video/two_clip_pot_v2_demo.mp4`](video/two_clip_pot_v2_demo.mp4)（20.8 s，含锅具截面场景）
 
 ## 0. 仓库导览
 
@@ -112,11 +114,65 @@
 - `design/compare_flat.png` / `compare_raised.png` —— 同机位改前/改后对比
 - `design/v2_handle_detail.png` —— 加高把手细节渲染
 
+## 6.6 V2 实景视频：从锅里取碗
+
+`video/two_clip_pot_v2_demo.mp4`（20.8 s / 1280×720 / 24 fps）：**锅具剖面场景**，完整演示"从锅里取碗"：
+
+1. ① 孔夹从锅口放入，C 形环两臂张开跨过碗沿、落到碗腰；
+2. ② 钩夹从对侧放入，同样套过碗沿，停在孔夹上方；
+3. ③ 钩尖落入孔中，两端头互锁成整环；
+4. ④ 双手上提加高把手，钢环楔紧，碗被锁住、提过锅沿移出；
+5. ⑤ 放碗、松环、上提钩夹、两夹退出。
+
+> 动画中钢环的"张开"用形状键（弹性变形）表现，为**等幅对称张开**的示意；真实安装可"先斜插一侧、再滚压过碗沿"，所需张开量更小。张开力的定量校核见 `docs/物理验证报告.md`（这正是 V2 的主要工程风险，见下节）。
+
+## 6.7 物理可行性验证（`docs/物理验证报告.md`）
+
+用**刚体静力学 + 材料力学 + 自编 2D 框架有限元**对 V2 做了定量校核（碗+食物 1.2 kg，安全系数 3）：
+
+| 项目 | 结果 | 判定 |
+|---|---|---|
+| 楔紧几何锁 | 环要扩张 25.9 mm 才可能滑过碗口；工作载荷下只扩张 **1.8 µm**（安全系数 1.4×10⁴） | ✅ 不会滑脱 |
+| 钢圈强度 | 工作载荷 1.4 MPa / SF=3 时 4.2 MPa（304 弹簧丝许用 1200 MPa） | ✅ |
+| 端头关节 / 立管 | 关节 44 MPa、立管 39 MPa、立管挠度 0.7 mm | ✅ |
+| 稳定性 | 单夹平衡需倾角 **54°** > 碗口几何容限 37°（必翻）；双夹对称受力净力矩 0 | ✅ 必须两只 |
+| **安装张开（控制工况）** | φ3.2 双钢丝跨过 φ173.6 碗口需张开 56 mm，估算 **≈585 N（60 kgf）** | ⚠️ **不具手工可操作性** |
+
+**由此得到的关键结论**：V1 的"碗腰水平靠近"不跨碗沿，完全可行；V2 的"锅口放入"要跨过碗沿，**φ3.2 钢丝太硬**。解决方向（已列入报告）：
+- 线径 φ2.5 / 自由内径 φ145 → ≈121 N（可双手用力压入）；
+- 线径 φ2.2 / 自由内径 φ155 → ≈53 N（轻松）；
+- 或用"斜插+滚压"手法 / 做成**可开合铰链版**。
+
+![物理校核图](design/physics_check.png)
+
+## 6.8 3D 打印版（`docs/3D打印说明.md`、`print/`）
+
+桌面 FDM/SLS 可打印的演示/验证版（打印版把"孔+弯钩"改为"孔+叠板+M4 销钉"，其余机构一致）：
+
+| 文件 | 数量 | PETG 重量 | 说明 |
+|---|---|---|---|
+| `print/clip_A_body.stl` | 1 | ≈9 g | 孔夹环体（含 M4 叠板关节） |
+| `print/clip_B_body.stl` | 1 | ≈9 g | 钩夹环体（含 M4 叠板关节） |
+| `print/riser_handle_A.stl` | 1 | ≈18 g | 加高立管+鱼形手柄（左手） |
+| `print/riser_handle_B.stl` | 1 | ≈18 g | 加高立管+鱼形手柄（右手） |
+| `print/fit_gauge.stl` | 1 | ≈2 g | 先打的配合量规（10 分钟） |
+
+零件全部**平放打印、无需支撑**；另需 M4×16 螺钉×2 + 锁紧螺母×2 + 环氧胶。打印设置、装配步骤、承重边界（演示用 ≤0.5 kg）见 `docs/3D打印说明.md`。
+
+![打印件预览](design/print_parts_preview.png)
+
 ## 7. 文件清单
 
 | 文件 | 说明 |
 |---|---|
-| `video/two_clip_bowl_lifter_demo.mp4` | 仿真视频（含中文字幕/标注） |
+| `video/two_clip_bowl_lifter_demo.mp4` | V1 仿真视频（台面取碗，含字幕/标注） |
+| `video/two_clip_pot_v2_demo.mp4` | **V2 仿真视频（锅中取碗，加高把手）** |
+| `docs/物理验证报告.md` | **物理可行性验证报告**（静力学/材料力学/2D 框架 FE） |
+| `design/physics_check.png` | 物理校核图表 |
+| `docs/3D打印说明.md` | **3D 打印文件清单与操作手册** |
+| `print/*.stl` | 3D 打印零件（孔夹体、钩夹体、加高立管×2、配合量规） |
+| `design/print_parts_preview.png` | 打印件预览 |
+| `scenes/two_clip_v2_demo.blend` | V2 锅中取碗动画场景 |
 | `design/design_sheet.png` | 设计说明图（俯视结构、关节细节、自锁原理、改动清单） |
 | `design/joint_macro.png` | 关节锁合状态 3D 渲染 |
 | `design/joint_macro_labeled.png` | 关节锁合状态（带「孔 / 钩」标注） |
@@ -132,7 +188,8 @@
 | `design/cad/sheet1_assembly.png` 等 | CAD 图纸单页 PNG |
 | `docs/实物制作指南.md` | **实物制作指南**（材料/工具、改造路线、3D 打印验证、工艺坑、检验清单、成本） |
 | `scenes/two_clip_demo.blend` | Blender 场景 V1（平把手，动画/视频用） |
-| `scenes/two_clip_v2.blend` | Blender 场景 V2（加高把手，锅中使用，静帧渲染用） |
+| `scenes/two_clip_v2.blend` | Blender 场景 V2（加高把手静帧用） |
+| `scenes/two_clip_v2_demo.blend` | V2 锅中取碗动画场景（500 帧） |
 | `scripts/` | 建模、动画、渲染、后期、图表、CAD 出图脚本 |
 
 ## 8. 复现（从源码重新生成）

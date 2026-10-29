@@ -22,3 +22,10 @@ desktop.ini
 # ---- 编辑器 ----
 .vscode/
 .idea/
+
+# ---- V2 视频中间帧与测试图 ----
+video/frames_v2/
+video/post_v2/
+tests/
+print/*.blend
+print/*.blend1
